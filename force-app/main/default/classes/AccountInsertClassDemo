@@ -6,6 +6,7 @@ public with sharing class AccountInsertClassDemo {
         for(Account acc:accList){
             acc.Description='Happy Welcome';
         }
+system.debug('accList' + accList);
     }
     public static void insertAccountOpp(List<Account> accList){
         List<Opportunity> oppList = new List<Opportunity>();
@@ -17,6 +18,7 @@ public with sharing class AccountInsertClassDemo {
             opp.AccountId = acc.id;
             oppList.add(opp);
         }
+system.debug('oppList' + oppList);
         if(oppList.size()>0){
             insert oppList;
         }
