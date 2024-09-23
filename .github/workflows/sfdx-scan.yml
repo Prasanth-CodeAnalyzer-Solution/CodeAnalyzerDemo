@@ -1,0 +1,129 @@
+name: sfdx scan code
+
+# sfdx
+on:
+  push:
+    branches:
+      - main
+      - '**'
+
+jobs:
+  installcli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+      - name: Install CLI
+        run: npm install @salesforce/cli --global
+      - name: Install Scanner Plugin
+        run: sf plugins install @salesforce/sfdx-scanner
+      - name: Verify SFDX CLI Installation
+        run: sf --version
+      - name: Verify SFDX Scanner Plugin Installation
+        run: sf plugins --core
+      - name: Run SFDX Scanner
+        run: |
+          sf scanner:run --target "force-app/main/default/classes/**/*.cls,force-app/main/default/lwc,force-app/main/default/triggers" --format "csv" --outfile "scanner-report.csv"
+        env:
+          SF_LAZY_LOAD_MODULES: 'true'
+          SF_AUTOUPDATE_DISABLE: 'true'
+          SF_DISABLE_AUTOUPDATE: 'true'
+          
+      - name: Encode CSV file to Base64
+        id: encode_file
+        run: |
+          base64 scanner-report.csv | tr -d '\n' > encoded_report.txt
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      - name: Get Repository and Branch Info
+        id: get_info
+        run: |
+          REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d'/' -f2)
+          BRANCH_NAME=$(echo $GITHUB_REF | sed 's/refs\/heads\///')
+          COMMIT_LABEL=$(git log -1 --pretty=format:'%s')
+          FILE_TITLE="Code Scanner Overall Report_${REPO_NAME}_${BRANCH_NAME}_${COMMIT_LABEL}"
+          echo "FILE_TITLE=${FILE_TITLE}" >> $GITHUB_ENV
+          echo "File Title=${FILE_TITLE}"
+
+
+
+      - name: Upload Scanner Report as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.FILE_TITLE }}
+          path: scanner-report.csv
+
+      - name: Check if File Already Exists in Salesforce
+        id: check_file
+        run: |
+          # URL encode the file title
+          ENCODED_TITLE=$(echo "${{ env.FILE_TITLE }}" | jq -sRr @uri)
+          ENC_TITLE=$(echo "${{ env.FILE_TITLE }}")
+
+          echo "ENCODED_TITLE=${ENCODED_TITLE}"
+          echo "ENC_TITLE=${ENC_TITLE}"
+
+          # Construct the URL for the query
+          QUERY_URL="https://aetna-c-dev-ed.develop.my.salesforce.com/services/data/v61.0/query?q=SELECT+Title+FROM+ContentVersion+WHERE+Title+%3D+%27Code%20Scanner%20Overall%20Report_CodeScanningSolution_main_Jira%20Story1%27"
+          echo "Query URL: ${QUERY_URL}"
+
+          # Perform the GET request to Salesforce
+          response=$(curl -X GET "${QUERY_URL}" \
+            -H "Authorization: Bearer ${{ secrets.SF_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json")
+
+          # Output the response for debugging
+          echo "Response: $response"
+
+          # Check if the file exists
+          file_exists=$(echo $response | jq -r '.records | length')
+          echo "Number of records found: $file_exists"
+
+          if [ "$file_exists" -gt 0 ]; then
+            echo "File with title '${{ env.FILE_TITLE }}' already exists in Salesforce."
+            echo "EXISTING_FILE=true" >> $GITHUB_ENV
+          else
+            echo "File with title '${{ env.FILE_TITLE }}' does not exist in Salesforce."
+            echo "EXISTING_FILE=false" >> $GITHUB_ENV
+          fi
+        env:
+          SF_ACCESS_TOKEN: ${{ secrets.SF_ACCESS_TOKEN }}
+
+      - name: Upload CSV Report to Salesforce
+        if: env.EXISTING_FILE == 'false'
+        run: |
+          contentDocumentResponse=$(curl -X POST https://aetna-c-dev-ed.develop.my.salesforce.com/services/data/v61.0/sobjects/ContentVersion/ \
+            -H "Authorization: Bearer ${{ secrets.SF_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "Title": "'"${{ env.FILE_TITLE }}"'",
+              "PathOnClient": "scanner-report.csv",
+              "VersionData": "'"$(cat encoded_report.txt)"'"
+            }')
+          echo "Response: $contentDocumentResponse"
+          
+          contentVersionId=$(echo $contentDocumentResponse | jq -r '.id // empty')
+          if [ -z "$contentVersionId" ]; then
+            echo "Error: Failed to upload file. No ContentVersionId found."
+            exit 1
+          fi
+          echo "ContentVersionId: $contentVersionId"
+          
+          contentDocumentResponse=$(curl -X GET https://aetna-c-dev-ed.develop.my.salesforce.com/services/data/v61.0/sobjects/ContentVersion/$contentVersionId \
+            -H "Authorization: Bearer ${{ secrets.SF_ACCESS_TOKEN }}")
+          echo "ContentDocument Response: $contentDocumentResponse"
+          
+          contentDocumentId=$(echo $contentDocumentResponse | jq -r '.ContentDocumentId // empty')
+          if [ -z "$contentDocumentId" ]; then
+            echo "Error: Failed to retrieve ContentDocumentId. No ContentDocumentId found."
+            exit 1
+          fi
+          echo "ContentDocumentId: $contentDocumentId"
+        env:
+          SF_ACCESS_TOKEN: ${{ secrets.SF_ACCESS_TOKEN }}
+        shell: bash
