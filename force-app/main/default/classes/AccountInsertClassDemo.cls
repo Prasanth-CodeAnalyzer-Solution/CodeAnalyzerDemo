@@ -17,6 +17,7 @@ public with sharing class AccountInsertClassDemo {
             opp.AccountId = acc.id;
             oppList.add(opp);
             system.debug('Print');
+            system.debug('PrintScan');
         }
         if(oppList.size()>0){
             insert oppList;
