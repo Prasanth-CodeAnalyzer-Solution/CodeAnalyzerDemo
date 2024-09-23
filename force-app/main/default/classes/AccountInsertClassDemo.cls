@@ -18,6 +18,7 @@ public with sharing class AccountInsertClassDemo {
             oppList.add(opp);
             system.debug('Print');
             system.debug('PrintScan');
+            system.debug('PrintScanDemo'); 
         }
         if(oppList.size()>0){
             insert oppList;
