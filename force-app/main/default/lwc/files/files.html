@@ -1,0 +1,82 @@
+<template>
+    <lightning-card title="Vulnerability Report">
+        <lightning-layout horizontal-align="spread">
+            <lightning-combobox
+        label="Select Vulnerability Report"
+        value={selectedFileId}
+        options={fileOptions}
+        onchange={handleFileSelection}
+        class="box">
+    </lightning-combobox>
+            <lightning-layout-item size="3">
+                <lightning-button label="Reset Filters" onclick={resetFilters}></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+        
+        <lightning-layout horizontal-align="spread">
+            <lightning-layout-item size="3">
+                <lightning-combobox name="categoryFilter" label="Filter by Category"
+                    value={selectedCategory} placeholder="Select a Category"
+                    options={categoryOptions} onchange={handleCategoryChange}
+                    class="box" disabled={isCategoryDisabled}>
+                </lightning-combobox>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-combobox name="engineFilter" label="Filter by Engine"
+                    value={selectedEngine} placeholder="Select an Engine"
+                    options={engineOptions} onchange={handleEngineChange}
+                    class="box" disabled={isEngineDisabled}>
+                </lightning-combobox>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-combobox name="ruleFilter" label="Filter by Rule"
+                    value={selectedRule} placeholder="Select a Rule"
+                    options={ruleOptions} onchange={handleRuleChange}
+                    class="box" disabled={isRuleDisabled}>
+                </lightning-combobox>
+            </lightning-layout-item>
+        </lightning-layout>
+ 
+        <!-- Display Category Counts Pie Chart -->
+        <template if:true={categoryCounts.length}>
+            <div class="chart-container" style="position: relative; height: 400px; width: 600px; margin: 20px auto;">
+                <canvas lwc:dom="manual" class="categoryChart"></canvas>
+            </div>
+        </template>
+
+        <!-- Display Category Counts Pie Chart -->
+        <template if:true={engineCounts.length}>
+            <div class="chart-container" style="position: relative; height: 400px; width: 600px; margin: 20px auto;">
+                <canvas lwc:dom="manual" class="engineChart"></canvas>
+            </div>
+        </template>
+ 
+        <!-- Display category counts table -->
+        <template if:true={categoryCounts.length}>
+            <lightning-datatable key-field="category" data={categoryCounts}
+                columns={categoryCountColumns} class="slds-m-top_medium" hide-checkbox-column="true">
+            </lightning-datatable>
+        </template>
+ 
+        <!-- Display engine counts table -->
+        <template if:true={engineCounts.length}>
+            <lightning-datatable key-field="engine" data={engineCounts}
+                columns={engineCountColumns} class="slds-m-top_medium" hide-checkbox-column="true">
+            </lightning-datatable>
+        </template>
+ 
+        <!-- Display severity counts table -->
+        <template if:true={severityCounts.length}>
+            <lightning-datatable key-field="severity" data={severityCounts}
+                columns={severityCountColumns} class="slds-m-top_medium" hide-checkbox-column="true">
+            </lightning-datatable>
+        </template>
+ 
+        <!-- Display main CSV data table -->
+        <template if:true={data.length}>
+            <lightning-datatable key-field="id" data={data}
+                columns={columns} hide-checkbox-column="true">
+            </lightning-datatable>
+        </template>
+    </lightning-card>
+</template>

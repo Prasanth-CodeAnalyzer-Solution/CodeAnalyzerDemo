@@ -1,0 +1,18 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "dashboards/Enablement_sfdcSESv60/Program_Dashboard_sfdcSESv60.dashboard",
+      "fullName": "Enablement_sfdcSESv60/Program_Dashboard_sfdcSESv60",
+      "id": "01Zak000001CPq5EAG",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "Dashboard"
+    }
+  ]
+}

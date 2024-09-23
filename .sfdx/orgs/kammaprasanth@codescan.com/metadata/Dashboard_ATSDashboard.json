@@ -1,0 +1,18 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T15:43:09.000Z",
+      "fileName": "dashboards/ATSDashboard/RilkvrsGbMJSTnINEjYAGkUSDJCnfM.dashboard",
+      "fullName": "ATSDashboard/RilkvrsGbMJSTnINEjYAGkUSDJCnfM",
+      "id": "01Zak000001CVSTEA4",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T15:43:09.000Z",
+      "manageableState": "unmanaged",
+      "type": "Dashboard"
+    }
+  ]
+}

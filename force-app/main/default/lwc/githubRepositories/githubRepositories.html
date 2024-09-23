@@ -1,0 +1,144 @@
+<template>
+    <lightning-card title="Code Analyzer Report">
+        <div class="slds-m-around_medium">
+            <div class="slds-grid slds-grid_align-spread">
+
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-combobox name="repositories" label="Repositories" value={selectedRepo}
+                        placeholder="Select a Repository" options={repoOptions} onchange={handleRepoChange}>
+                    </lightning-combobox>
+                </div>
+
+                <template if:true={branchesVisible}>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning-combobox name="branches" label="Branches" value={selectedBranch}
+                            placeholder="Select a Branch" options={branchOptions} onchange={handleBranchChange}>
+                        </lightning-combobox>
+                    </div>
+                </template>
+
+                <template if:true={reportTypeVisible}>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning-combobox name="reportTypes" label="Report Type" value={selectedReportType}
+                            placeholder="Select a Report Type" options={reportTypeOptions}
+                            onchange={handleReportTypeChange}>
+                        </lightning-combobox>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Display Message if No Files Found -->
+            <template if:true={noFilesFound}>
+                <div class="slds-m-top_medium">
+                    <p class="slds-text-color_error"><b>Code Analyzer Report not found in the Current Branch Report.</b>
+                    </p>
+                </div>
+            </template>
+
+            <!-- File Selection Combobox (Visible after selecting report type) -->
+            <template if:true={fileOptions.length}>
+                <div class="slds-m-top_medium">
+                    <lightning-combobox label="Select Code Analyzer Report" value={selectedFileId} options={fileOptions}
+                        onchange={handleFileSelection} class="box">
+                    </lightning-combobox>
+                </div>
+
+                <div class="slds-m-top_medium slds-grid slds-grid_align-center">
+                    <lightning-button label="Apply Filters" onclick={applyFilters} class="slds-m-right_small"
+                        variant="brand"></lightning-button>
+                    <lightning-button label="Reset Filters" onclick={resetFilters}></lightning-button>
+                </div>
+
+                <template if:true={showFilters}>
+                    <div class="slds-m-top_medium">
+                        <div class="slds-grid slds-grid_align-spread">
+                            <div class="slds-col slds-size_1-of-3">
+                                <lightning-combobox name="categoryFilter" label="Filter by Category"
+                                    value={selectedCategory} placeholder="Select a Category" options={categoryOptions}
+                                    onchange={handleCategoryChange} class="box" disabled={isCategoryDisabled}>
+                                </lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3">
+                                <lightning-combobox name="engineFilter" label="Filter by Engine" value={selectedEngine}
+                                    placeholder="Select an Engine" options={engineOptions} onchange={handleEngineChange}
+                                    class="box" disabled={isEngineDisabled}>
+                                </lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3">
+                                <lightning-combobox name="ruleFilter" label="Filter by Rule" value={selectedRule}
+                                    placeholder="Select a Rule" options={ruleOptions} onchange={handleRuleChange}
+                                    class="box" disabled={isRuleDisabled}>
+                                </lightning-combobox>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="slds-m-top_medium">
+                    <!-- Display Category Counts Pie Chart -->
+                    <!-- <template if:true={categoryCounts.length}>
+                        <div class="chart-container"
+                            style="position: relative; height: 400px; width: 600px; margin: 20px auto;">
+                            <canvas lwc:dom="manual" class="categoryChart"></canvas>
+                        </div>
+                    </template> -->
+
+                    <!-- Display Category Counts Pie Chart -->
+                    <!-- <template if:true={engineCounts.length}>
+                        <div class="chart-container"
+                            style="position: relative; height: 400px; width: 600px; margin: 20px auto;">
+                            <canvas lwc:dom="manual" class="engineChart"></canvas>
+                        </div>
+                    </template> -->
+
+                    <!-- Display category counts table -->
+                    <template if:true={categoryCounts.length}>
+                        <div class="slds-m-top_medium">
+                            <lightning-datatable key-field="category" data={categoryCounts}
+                                columns={categoryCountColumns} class="slds-m-top_medium" hide-checkbox-column="true">
+                            </lightning-datatable>
+                        </div>
+                    </template>
+
+                    <!-- Display engine counts table -->
+                    <template if:true={engineCounts.length}>
+                        <div class="slds-m-top_medium">
+                            <lightning-datatable key-field="engine" data={engineCounts} columns={engineCountColumns}
+                                class="slds-m-top_medium" hide-checkbox-column="true">
+                            </lightning-datatable>
+                        </div>
+                    </template>
+
+                    <!-- Display severity counts table -->
+                    <template if:true={severityCounts.length}>
+                        <div class="slds-m-top_medium">
+                            <lightning-datatable key-field="severity" data={severityCounts}
+                                columns={severityCountColumns} class="slds-m-top_medium" hide-checkbox-column="true">
+                            </lightning-datatable>
+                        </div>
+                    </template>
+
+                    <!-- Display main CSV data table -->
+                    <template if:true={data.length}>
+                        <div class="slds-m-top_medium">
+                            <lightning-datatable key-field="id" data={paginatedData} columns={columns}
+                                hide-checkbox-column="true">
+                            </lightning-datatable>
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        <div class="slds-m-top_medium slds-grid slds-grid_align-spread">
+                            <div class="slds-col">
+                                <lightning-button label="Previous" onclick={handlePrevious} class="slds-m-right_small" disabled={disablePrevious}></lightning-button>
+                                <lightning-button label="Next" onclick={handleNext} disabled={disableNext}></lightning-button>
+                            </div>
+                            <div class="slds-col slds-text-align_right">
+                                <p>Page {currentPage} of {totalPages} ({totalRecords} Records)</p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,47 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:55:28.000Z",
+      "fileName": "aura/sf_devops__defaultTokens",
+      "fullName": "sf_devops__defaultTokens",
+      "id": "0Abak000001ePiJCAU",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:55:28.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "AuraDefinitionBundle"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:55:28.000Z",
+      "fileName": "aura/sf_devops__template",
+      "fullName": "sf_devops__template",
+      "id": "0Abak000001ePiHCAU",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:55:28.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "AuraDefinitionBundle"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:55:28.000Z",
+      "fileName": "aura/sf_devops__DevOpsCenter",
+      "fullName": "sf_devops__DevOpsCenter",
+      "id": "0Abak000001ePiICAU",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:55:28.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "AuraDefinitionBundle"
+    }
+  ]
+}

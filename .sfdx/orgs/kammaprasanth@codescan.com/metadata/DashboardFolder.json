@@ -1,0 +1,44 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "dashboards/Enablement_sfdcSESv61",
+      "fullName": "Enablement_sfdcSESv61",
+      "id": "00lak000006kMn0AAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "DashboardFolder"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T15:43:09.000Z",
+      "fileName": "dashboards/ATSDashboard",
+      "fullName": "ATSDashboard",
+      "id": "00lak000006kjZmAAI",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T15:43:09.000Z",
+      "manageableState": "unmanaged",
+      "type": "DashboardFolder"
+    },
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "dashboards/Enablement_sfdcSESv60",
+      "fullName": "Enablement_sfdcSESv60",
+      "id": "00lak000006kMmyAAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "DashboardFolder"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+.slds-grid {
+    display: flex;
+    align-items: center; /* Vertically center the items */
+}
+
+.slds-col {
+    padding-right: 1rem; /* Add spacing between the columns */
+}
+
+.slds-col:last-child {
+    padding-right: 0; /* Remove padding from the last column */
+}
+
+.slds-grid_align-spread {
+    width: 100%; /* Ensure grid takes full width */
+}
+
+.slds-grid .slds-col {
+    flex: 1; /* Ensure all columns take equal space */
+}
+
+
+/* .box{
+    width:320px;
+} */
+
+
+/* .slds-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.slds-col {
+    flex: 1;
+    min-width: 50%;
+} */
+
+/* .slds-m-top_medium {
+    margin-top: 1rem; 
+}
+
+.chart-container {
+    margin-top: 20px;
+} */

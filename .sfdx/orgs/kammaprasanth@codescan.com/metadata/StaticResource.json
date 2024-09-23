@@ -1,0 +1,74 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:55:23.000Z",
+      "fileName": "staticresources/sf_devops__DOCeForceIgnore.resource",
+      "fullName": "sf_devops__DOCeForceIgnore",
+      "id": "081ak000005YuRVAA0",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:55:23.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "StaticResource"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:55:23.000Z",
+      "fileName": "staticresources/sf_devops__forceignore2.resource",
+      "fullName": "sf_devops__forceignore2",
+      "id": "081ak000005YuRYAA0",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:55:23.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "StaticResource"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:55:23.000Z",
+      "fileName": "staticresources/sf_devops__devopsCenter.resource",
+      "fullName": "sf_devops__devopsCenter",
+      "id": "081ak000005YuRWAA0",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:55:23.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "StaticResource"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T15:43:08.000Z",
+      "fileName": "staticresources/ChartJS.resource",
+      "fullName": "ChartJS",
+      "id": "081ak000005Z5GTAA0",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T15:43:08.000Z",
+      "manageableState": "unmanaged",
+      "type": "StaticResource"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:55:23.000Z",
+      "fileName": "staticresources/sf_devops__forceignore1.resource",
+      "fullName": "sf_devops__forceignore1",
+      "id": "081ak000005YuRXAA0",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:55:23.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "StaticResource"
+    }
+  ]
+}

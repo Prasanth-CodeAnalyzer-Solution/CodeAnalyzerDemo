@@ -1,0 +1,123 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "reports/EnablementDashboardReports_sfdcSESv60",
+      "fullName": "EnablementDashboardReports_sfdcSESv60",
+      "id": "00lak000006kMmxAAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "ReportFolder"
+    },
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "reports/EinsteinBotReports_v2",
+      "fullName": "EinsteinBotReports_v2",
+      "id": "00lak000006kMmvAAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "ReportFolder"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T15:43:09.000Z",
+      "fileName": "reports/ATSReportFolder",
+      "fullName": "ATSReportFolder",
+      "id": "00lak000006kjZlAAI",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T15:43:09.000Z",
+      "manageableState": "unmanaged",
+      "type": "ReportFolder"
+    },
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "reports/EBotR_v3",
+      "fullName": "EBotR_v3",
+      "id": "00lak000006kMmsAAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "ReportFolder"
+    },
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "reports/EBotR_v5",
+      "fullName": "EBotR_v5",
+      "id": "00lak000006kMmwAAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "ReportFolder"
+    },
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "reports/EnablementDashboardReports_sfdcSESv61",
+      "fullName": "EnablementDashboardReports_sfdcSESv61",
+      "id": "00lak000006kMmzAAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "ReportFolder"
+    },
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "reports/EBotR_v4",
+      "fullName": "EBotR_v4",
+      "id": "00lak000006kMmtAAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "ReportFolder"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "1970-01-01T00:00:00.000Z",
+      "fileName": "unfiled$public",
+      "fullName": "unfiled$public",
+      "id": "",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "1970-01-01T00:00:00.000Z",
+      "manageableState": "unmanaged",
+      "namespacePrefix": "",
+      "type": "ReportFolder"
+    },
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "reports/EinsteinBotReports",
+      "fullName": "EinsteinBotReports",
+      "id": "00lak000006kMmuAAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "ReportFolder"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+.box{
+    width:320px;
+}
+
+
+.slds-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.slds-col {
+    flex: 1;
+    min-width: 50%;
+}
+
+.slds-m-top_medium {
+    margin-top: 1rem; /* Adjust spacing as needed */
+}
+
+.chart-container {
+    margin-top: 20px;
+}
