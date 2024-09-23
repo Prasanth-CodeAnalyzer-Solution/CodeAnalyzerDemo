@@ -16,6 +16,7 @@ public with sharing class AccountInsertClassDemo {
             opp.StageName = 'Prospecting';
             opp.AccountId = acc.id;
             oppList.add(opp);
+            system.debug('Print');
         }
         if(oppList.size()>0){
             insert oppList;
