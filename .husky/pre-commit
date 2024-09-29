@@ -1,44 +1,38 @@
 #!/bin/bash
-
-# Get the list of changed Apex (.cls) or LWC files
-changed_files=$(git diff --cached --name-only | grep -E '\.cls$|\.lwc$')
-
+ 
+# Get the list of changed Apex (.cls), LWC (.js, .html), and XML files
+changed_files=$(git diff --cached --name-only | grep -E '\.(cls|js|html|xml)$')
+ 
 # Check if there are any relevant changes
 if [ -z "$changed_files" ]; then
   echo "No relevant changes to scan."
   exit 0
 fi
-
+ 
 # Convert changed_files into an array
 changed_files_array=($changed_files)
-
+ 
 # Run the SFDX scanner on each of the changed files
-sf scanner:run --target "${changed_files_array[@]}" --format "json" --outfile "precommit-scanner-report.json"
-
+if ! sf scanner:run --target "${changed_files_array[@]}" --format "json" --outfile "precommit-scanner-report.json"; then
+  echo "Scanner command failed. Please check your installation or the files being scanned."
+  exit 1
+fi
+ 
 # Check if the JSON report exists
 if [ ! -f "precommit-scanner-report.json" ]; then
   echo "Scanner report not found. Please check the scanner command."
   exit 1
 fi
-
-# Ensure 'jq' is installed
-if ! command -v jq &> /dev/null; then
-  echo "'jq' command not found. Please install it to parse JSON."
-  exit 1
-fi
-
-# Parse the JSON report to find severity 3 issues
-severity_fail_count=$(jq '[.results[].violations[] | select(.severity == 3)] | length' precommit-scanner-report.json)
-
-# Default to 0 if severity_fail_count is empty
-severity_fail_count=${severity_fail_count:-0}
-
+ 
+# Parse the JSON and check for severity 3 issues
+severity_fail_count=$(jq '[.result | .[] | select(.violations[]? | .severity == 3)] | length' precommit-scanner-report.json)
+ 
 # Output the fail count for debugging
 echo "Severity Fail Count::::::"
 echo "$severity_fail_count"
-
-# Block commit if there are severity 3 issues and ensure it's an integer
-if [ "$severity_fail_count" -gt 0 ] 2>/dev/null; then
+ 
+# Block commit if there are severity 3 issues
+if [ "$severity_fail_count" -gt 0 ]; then
   echo "Blocking your commit due to vulnerabilities found with severity 3."
   exit 1
 else
