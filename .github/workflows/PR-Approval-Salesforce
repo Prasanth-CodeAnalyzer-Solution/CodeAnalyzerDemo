@@ -1,0 +1,67 @@
+name: PR Approval Workflow
+ 
+on:
+  pull_request_review:
+    types: [submitted]
+  check_suite:
+    types: [completed]
+ 
+jobs:
+  pr_approval:
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Check if PR is approved
+        id: pr_approval_check
+        run: |
+          if [[ "${{ github.event.review.state }}" == "approved" ]]; then
+            echo "PR Approved"
+            echo "::set-output name=PR_STATUS::approved"
+          else  
+            echo "PR Not Approved"
+            exit 1
+          fi
+ 
+      - name: Fetch all check runs for the PR
+        if: steps.pr_approval_check.outputs.PR_STATUS == 'approved'
+        id: fetch_checks
+        run: |
+          CHECK_RUNS=$(curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }}/check-runs)
+ 
+          echo "Check runs: $CHECK_RUNS"
+          echo "$CHECK_RUNS" > check_runs.json
+ 
+      - name: Process completed check run data
+        if: steps.pr_approval_check.outputs.PR_STATUS == 'approved'
+        id: process_checks
+        run: |
+          # Filter only completed checks
+          CHECK_NAMES=$(jq -r '.check_runs[] | select(.status == "completed") | .name' check_runs.json | paste -sd "," -)
+          CHECK_STATUSES=$(jq -r '.check_runs[] | select(.status == "completed") | .conclusion' check_runs.json | paste -sd "," -)
+         
+          echo "::set-output name=CHECK_NAMES::$CHECK_NAMES"
+          echo "::set-output name=CHECK_STATUSES::$CHECK_STATUSES"
+ 
+      - name: Send PR Information to Salesforce
+        if: steps.pr_approval_check.outputs.PR_STATUS == 'approved'
+        run: |
+          prStatus=${{ steps.pr_approval_check.outputs.PR_STATUS }}
+          prComment="${{ github.event.review.body }}"
+         
+          plRequestObjectResponse=$(curl -X POST https://individual-fc-dev-ed.develop.my.salesforce.com/services/data/v61.0/sobjects/Pull_Request__c/ \
+            -H "Authorization: Bearer ${{ secrets.SF_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+                "PR_Title__c": "'"${{ github.event.pull_request.title }}"'",
+                "PR_Link__c": "'"${{ github.event.pull_request.html_url }}"'",
+                "PR_Status__c": "'"$prStatus"'",
+                "PR_Review_Comment__c": "'"$prComment"'",
+                "PR_Author__c": "'"${{ github.event.pull_request.user.login }}"'",
+                "PR_Reviewer__c": "'"${{ github.event.review.user.login }}"'",
+                "PR_Check_Status__c": "'"${{ steps.process_checks.outputs.CHECK_STATUSES }}"'",
+                "PR_Check_Name__c": "'"${{ steps.process_checks.outputs.CHECK_NAMES }}"'"
+            }')
+          echo "Response: $plRequestObjectResponse"
+ 

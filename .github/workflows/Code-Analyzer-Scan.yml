@@ -1,0 +1,222 @@
+name: Salesforce Code Scan and Critical Permissions Check on Pull Request
+ 
+on:
+  pull_request:
+    branches:
+      - '**'
+ 
+jobs:
+  setup-installation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+ 
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+ 
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli --global
+ 
+      - name: Install Scanner Plugin
+        run: sf plugins install @salesforce/sfdx-scanner
+ 
+      - name: Verify Salesforce CLI Installation
+        run: sf --version
+ 
+      - name: Verify Scanner Plugin Installation
+        run: sf plugins --core
+ 
+  calculate-differences:
+    needs: setup-installation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+ 
+      - name: Get changed files
+        id: get-changes
+        run: |
+          git fetch --unshallow || true
+          if [ "$(git rev-list --count HEAD)" -gt "1" ]; then
+            echo "Fetching changed files between HEAD~1 and HEAD"
+            git diff --name-only HEAD~1 HEAD > changed_files.txt
+          else
+            echo "No previous commit to compare to." > changed_files.txt
+          fi
+          cat changed_files.txt
+ 
+      - name: Upload changed_files.txt as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: changed_files.txt
+          path: changed_files.txt
+ 
+  run-salesforce-code-analyzer:
+    needs: calculate-differences
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+ 
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli --global
+ 
+      - name: Install Scanner Plugin
+        run: sf plugins install @salesforce/sfdx-scanner
+ 
+      - name: Verify Salesforce CLI Installation
+        run: sf --version
+ 
+      - name: Verify Scanner Plugin Installation
+        run: sf plugins --core
+ 
+      - name: Download changed_files.txt artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: changed_files.txt
+ 
+      - name: Run SFDX Scanner on All Changed Files
+        id: run-scanner
+        run: |
+          files=$(cat changed_files.txt | grep -E '\.cls$|\.lwc$' || true)
+          echo "Files to scan: $files"
+          if [ -n "$files" ]; then
+            for file in $files; do
+              echo "Running scanner on $file"
+              sf scanner:run --target "$file" --format csv --outfile temp-scanner-report.csv --category "Performance" || { echo "Scanner run failed on $file"; exit 1; }
+              # Append results of each scan to the combined report
+              tail -n +2 temp-scanner-report.csv >> scanner-report.csv
+            done
+          else
+            echo "No relevant files changed."
+            # Create an empty CSV file to avoid errors in the next step
+            echo "file,severity,ruleName" > scanner-report.csv
+          fi
+          ls -l scanner-report.csv  # Log to verify that the file is created
+        env:
+          SF_LAZY_LOAD_MODULES: 'true'
+          SF_AUTOUPDATE_DISABLE: 'true'
+          SF_DISABLE_AUTOUPDATE: 'true'
+ 
+      - name: Upload combined scanner report as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: scanner-report.csv
+          path: scanner-report.csv        
+ 
+  run-salesforce-critical-permissions-check:
+    needs: calculate-differences
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+ 
+      - name: Scan Profiles and Permission Sets for Critical Permissions
+        run: |
+          CRITICAL_PERMISSIONS=(
+              "AssignPermissionSets"
+              "AuthorApex"
+              "CustomizeApplication"
+              "FreezeUsers"
+              "ManageEncryptionKeys"
+              "ManageInternalUsers"
+              "ManagePasswordPolicies"
+              "ManageProfilesPermissionSets"
+              "ManageRoles"
+              "ManageSharing"
+              "ManageUsers"
+              "ModifyAllData"
+              "MonitorLoginHistory"
+              "MultiFactorAuthenticationRequired"
+              "PasswordNeverExpires"
+              "ResetPasswordsUnlockUsers"
+              "ViewAllData"
+          )
+ 
+          BLOCKED_FILES=()
+ 
+          # Search through profiles
+          for FILE in $(find force-app/main/default/profiles -name '*.profile-meta.xml'); do
+            for PERMISSION in "${CRITICAL_PERMISSIONS[@]}"; do
+              if grep -q "$PERMISSION" "$FILE" && ! grep -q "System Administrator" "$FILE"; then
+                BLOCKED_FILES+=("$FILE")
+              fi
+            done
+          done
+ 
+          # Search through permission sets
+          for FILE in $(find force-app/main/default/permissionsets -name '*.permissionset-meta.xml'); do
+            for PERMISSION in "${CRITICAL_PERMISSIONS[@]}"; do
+              if grep -q "$PERMISSION" "$FILE"; then
+                BLOCKED_FILES+=("$FILE")
+              fi
+            done
+          done
+ 
+          if [ ${#BLOCKED_FILES[@]} -gt 0 ]; then
+            echo "Critical permissions found in the following files:"
+            for FILE in "${BLOCKED_FILES[@]}"; do
+              echo "$FILE"
+            done
+            exit 1
+          else
+            echo "No critical permissions assigned to non-System Administrator profiles or permission sets."
+          fi
+ 
+  check-severity-3-vulnerabilities:
+    needs: run-salesforce-code-analyzer
+    runs-on: ubuntu-latest
+    outputs:
+      severity_fail_count: ${{ steps.check-severity.outputs.severity_fail_count }}
+    steps:
+      - uses: actions/checkout@v3
+ 
+      - name: Download scanner-report.csv artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: scanner-report.csv
+ 
+      - name: Check for Severity 3 Vulnerabilities
+        id: check-severity
+        run: |
+          if [ -f scanner-report.csv ]; then
+            severity_fail_count=$(awk -F',' '{gsub(/^ *| *$/, "", $2); if($2 == "\"3\"") count++} END {print count}' scanner-report.csv)
+            echo "Severity 3 issues count: $severity_fail_count"
+            echo "severity_fail_count=$severity_fail_count" >> $GITHUB_ENV
+            echo "::set-output name=severity_fail_count::$severity_fail_count"
+          else
+            echo "No scanner report found."
+            exit 1
+          fi
+ 
+  block-pr-if-vulnerabilities-found:
+    needs: [check-severity-3-vulnerabilities, run-salesforce-critical-permissions-check]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Block PR if Vulnerabilities or Critical Permission Issues Found
+        run: |
+          severity_fail_count="${{ needs.check-severity-3-vulnerabilities.outputs.severity_fail_count }}"
+          if [ "$severity_fail_count" -gt 0 ]; then
+            echo "Blocking your pull request due to severity 3 vulnerabilities found."
+            exit 1
+          fi
+          if [ "${{ needs.run-salesforce-critical-permissions-check.result }}" == "failure" ]; then
+            echo "Blocking your pull request due to critical permission issues."
+            exit 1
+          fi
+          echo "No issues found. Send Approval to Reviewers."
+ 
+  code-analyzer-report:
+    needs: [block-pr-if-vulnerabilities-found]
+    if: success()  # Ensures this job only runs if the previous jobs were successful
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+ 
+      - name: Download scanner-report.csv artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: scanner-report.csv
