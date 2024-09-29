@@ -1,17 +1,5 @@
 #!/bin/bash
- 
-# Check if Husky is installed
-if ! command -v husky &> /dev/null
-then
-    echo "Husky is not installed. Installing Husky..."
-    npm install husky --save-dev
- 
-    # Initialize Husky hooks if it's not already set up
-    npx husky install
-else
-    echo "Husky is already installed."
-fi
- 
+  
 # Get the list of changed Apex (.cls) or LWC files
 changed_files=$(git diff --cached --name-only | grep -E '\.cls$|\.lwc$')
  
