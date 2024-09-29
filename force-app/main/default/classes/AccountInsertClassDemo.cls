@@ -65,6 +65,7 @@ public with sharing class AccountInsertClassDemo {
                 }
             }
             insert accList;
+            System.debug ('Test Vulnerability');
         } else {
             throw new CustomException('You do not have permission to create Account records.');
         }
