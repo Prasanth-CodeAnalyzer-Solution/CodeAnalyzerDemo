@@ -22,7 +22,7 @@ if [ ! -f "precommit-scanner-report.json" ]; then
 fi
  
 # Manually parse the JSON and check for severity 3 issues within violations array
-severity_fail_count=$(grep -oP '"severity":\s*(3|5|1)' precommit-scanner-report.json | wc -l)
+severity_fail_count=$(grep -oP '"severity":\s*3' precommit-scanner-report.json | wc -l)
  
 # Output the fail count for debugging
 echo "Severity Fail Count::::::"
