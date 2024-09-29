@@ -30,12 +30,15 @@ fi
 # Parse the JSON report to find severity 3 issues
 severity_fail_count=$(jq '[.files[].violations[] | select(.severity == 3)] | length' precommit-scanner-report.json)
 
+# Default to 0 if severity_fail_count is empty
+severity_fail_count=${severity_fail_count:-0}
+
 # Output the fail count for debugging
 echo "Severity Fail Count::::::"
 echo "$severity_fail_count"
 
-# Block commit if there are severity 3 issues
-if [ "$severity_fail_count" -gt 0 ]; then
+# Block commit if there are severity 3 issues and ensure it's an integer
+if [ "$severity_fail_count" -gt 0 ] 2>/dev/null; then
   echo "Blocking your commit due to vulnerabilities found with severity 3."
   exit 1
 else
