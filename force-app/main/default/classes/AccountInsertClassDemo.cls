@@ -17,7 +17,7 @@ public with sharing class AccountInsertClassDemo {
             opp.AccountId = acc.id;
             oppList.add(opp);
             system.debug('Print');
-            system.debug('PrintScan');
+            system.debug('PrintScan234');
             system.debug('PrintScanDemo234');
             system.debug('MyNewDemo23456789'); 
         }
