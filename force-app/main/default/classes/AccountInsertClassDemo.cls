@@ -61,7 +61,7 @@ public with sharing class AccountInsertClassDemo {
         if(Schema.sObjectType.Account.isCreateable()){
             for(Account acc : accList){
                 if(Schema.sObjectType.Account.fields.Description.isUpdateable()){
-                    acc.Description = 'Happy Welcome Account Checks Monday to 12345';
+                    acc.Description = 'Happy Welcome Account Checks Monday to 123455678';
                 }
             }
             insert accList;
