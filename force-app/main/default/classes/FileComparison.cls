@@ -165,7 +165,7 @@ public class FileComparison {
             newFile.IsMajorVersion = true;
             insert newFile;
 
-            System.debug('New file created with unique rows.');
+            System.debug('New file created with unique columns.');
         } catch (Exception e) {
             System.debug('Exception occurred: ' + e.getMessage());
         } finally {
