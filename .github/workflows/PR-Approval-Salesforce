@@ -50,7 +50,7 @@ jobs:
           prStatus=${{ steps.pr_approval_check.outputs.PR_STATUS }}
           prComment="${{ github.event.review.body }}"
          
-          plRequestObjectResponse=$(curl -X POST https://individual-fc-dev-ed.develop.my.salesforce.com/services/data/v61.0/sobjects/Pull_Request__c/ \
+          plRequestObjectResponse=$(curl -X POST https://aetna-c-dev-ed.develop.my.salesforce.com/services/data/v61.0/sobjects/Pull_Request__c/ \
             -H "Authorization: Bearer ${{ secrets.SF_ACCESS_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d '{

@@ -61,10 +61,11 @@ public with sharing class AccountInsertClassDemo {
         if(Schema.sObjectType.Account.isCreateable()){
             for(Account acc : accList){
                 if(Schema.sObjectType.Account.fields.Description.isUpdateable()){
-                    acc.Description = 'Happy Welcome Account Checks Monday to 12345';
+                    acc.Description = 'Happy Welcome Account Checks Monday';
                 }
             }
             insert accList;
+            System.debug ('Test Vulnerability 093020241223');
         } else {
             throw new CustomException('You do not have permission to create Account records.');
         }
