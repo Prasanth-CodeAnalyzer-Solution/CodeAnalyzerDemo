@@ -6,7 +6,7 @@ on:
       - '**'
  
 jobs:
-  run-code-scan:
+  setup-installation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -30,124 +30,89 @@ jobs:
       - name: Verify Scanner Plugin Installation
         run: sf plugins --core
  
-      - name: Get changed files and lines
+  calculate-differences:
+    needs: setup-installation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+ 
+      - name: Get changed files
         id: get-changes
         run: |
-          # Check if the repository is shallow and unshallow if necessary
-          if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
-            echo "Repository is shallow, unshallowing..."
-            git fetch --unshallow
-          else
-            echo "Repository is not shallow, skipping unshallow."
-          fi
- 
+          git fetch --unshallow || true
           if [ "$(git rev-list --count HEAD)" -gt "1" ]; then
-            echo "Fetching changed files and lines between HEAD~1 and HEAD"
-            git diff --unified=0 HEAD~1 HEAD > changes.diff
+            echo "Fetching changed files between HEAD~1 and HEAD"
+            git diff --name-only HEAD~1 HEAD > changed_files.txt
           else
-            echo "No previous commit to compare to." > changes.diff
+            echo "No previous commit to compare to." > changed_files.txt
           fi
+          cat changed_files.txt
  
-          cat changes.diff
+      - name: Upload changed_files.txt as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: changed_files.txt
+          path: changed_files.txt
  
-      - name: Extract changed lines, create temp file, and scan
-        if: success()
+  run-salesforce-code-analyzer:
+    needs: calculate-differences
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+ 
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli --global
+ 
+      - name: Install Scanner Plugin
+        run: sf plugins install @salesforce/sfdx-scanner
+ 
+      - name: Verify Salesforce CLI Installation
+        run: sf --version
+ 
+      - name: Verify Scanner Plugin Installation
+        run: sf plugins --core
+ 
+      - name: Download changed_files.txt artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: changed_files.txt
+ 
+      - name: Run SFDX Scanner on All Changed Files
+        id: run-scanner
         run: |
-          # Extract only the changed files from the diff for .cls and .lwc files
-          files=$(grep -E '^\+\+\+ b/.*(\.cls|\.lwc)$' changes.diff | sed 's/+++ b\///')
-          if [ -z "$files" ]; then
-            echo "No changed .cls or .lwc files detected."
-            exit 0  # Gracefully exit if no relevant files are changed
+          files=$(cat changed_files.txt | grep -E '\.cls$|\.lwc$' || true)
+          echo "Files to scan: $files"
+          if [ -n "$files" ]; then
+            for file in $files; do
+              echo "Running scanner on $file"
+              sf scanner:run --target "$file" --format csv --outfile temp-scanner-report.csv --category "Performance" || { echo "Scanner run failed on $file"; exit 1; }
+              # Append results of each scan to the combined report
+              tail -n +2 temp-scanner-report.csv >> scanner-report.csv
+            done
+          else
+            echo "No relevant files changed."
+            # Create an empty CSV file to avoid errors in the next step
+            echo "file,severity,ruleName" > scanner-report.csv
           fi
- 
-          while IFS= read -r file; do
-            echo "Processing file: $file"
-            # Extract the actual changed lines for the specific file
-            changed_lines=$(grep -A 1000 "$file" changes.diff | grep '^+' | grep -v '+++' | cut -d'+' -f2-)
-            if [ -n "$changed_lines" ]; then
-              echo "Changed lines in $file:"
-              echo "$changed_lines"
- 
-              # Create a temporary file with a valid method structure
-              temp_file="temp_${file//\//_}"
-              echo "/* Temporary file for changed lines scan */" > "$temp_file"
-              echo "public class TempWrapperClass {" >> "$temp_file"
-              echo "    public static void tempMethod() {" >> "$temp_file"
-              echo "        /* Begin of extracted changed lines */" >> "$temp_file"
-              echo "$changed_lines" >> "$temp_file"
-              echo "        /* End of extracted changed lines */" >> "$temp_file"
-              echo "    }" >> "$temp_file"
- 
-              # Check for unbalanced braces (ensure the method and class are closed properly)
-              open_braces=$(echo "$changed_lines" | grep -o '{' | wc -l)
-              close_braces=$(echo "$changed_lines" | grep -o '}' | wc -l)
-              if [ "$open_braces" -gt "$close_braces" ]; then
-                remaining_closing_braces=$(($open_braces - $close_braces))
-                for i in $(seq 1 $remaining_closing_braces); do
-                  echo "}" >> "$temp_file"
-                done
-              fi
- 
-              echo "}" >> "$temp_file"  # Close the class
-              echo "Created temporary file with method structure: $temp_file"
- 
-              # Run the SFDX scanner on the temporary file
-              echo "Running SFDX scanner on temporary file $temp_file"
-              sf scanner:run --target "$temp_file" --format "csv" --outfile "scanner-report-$temp_file.csv" || { echo "Scanner run failed"; exit 1; }
- 
-              # Check if the scanner report was generated
-              if [ -s "scanner-report-$temp_file.csv" ]; then
-                echo "Scanner report generated for $temp_file."
-                # Trim the file paths in the 'File' column of the generated report
-                echo "Trimming the file paths in scanner report: scanner-report-$temp_file.csv"
-                # Use sed to remove the specified path from the 'File' column
-                sed -i 's|/home/runner/work/TestingGitActions/TestingGitActions/temp_force-app_main_default_classes_||g' "scanner-report-$temp_file.csv"
-                echo "File paths trimmed in scanner-report-$temp_file.csv."
-              else
-                echo "No scanner report generated for $temp_file."
-                exit 0  # Exit gracefully if no report was generated
-              fi
- 
-              # Clean up the temporary file after scanning
-              rm "$temp_file"
-            else
-              echo "No relevant changes detected in $file."
-            fi
-          done <<< "$files"
+          ls -l scanner-report.csv  # Log to verify that the file is created
         env:
           SF_LAZY_LOAD_MODULES: 'true'
           SF_AUTOUPDATE_DISABLE: 'true'
           SF_DISABLE_AUTOUPDATE: 'true'
  
-      - name: Upload Scanner Report and Rules as Artifacts
+      - name: Upload combined scanner report as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: SFDX_Code_Scan_Delta
-          path: |
-            scanner-report-*.csv
+          name: scanner-report.csv
+          path: scanner-report.csv        
  
-      - name: Block PR merge if severity violations are found
-        run: |
-          if [ -f scanner-report-$temp_file.csv ]; then
-            # Assuming 'severity' is the third column in the CSV
-            severity_fail_count=$(awk -F',' '{gsub(/^ *| *$/, "", $2); if($2 == "\"3\"") count++} END {print count}' scanner-report-$temp_file.csv)
-            echo "Severity 3 issues count: $severity_fail_count"
-            if [ "$severity_fail_count" -gt 0 ]; then
-              echo "Blocking your pull request due to severity 3 vulnerabilities found."
-              exit 1
-            else
-              echo "No severity 3 vulnerabilities found. Proceeding with Approval."
-            fi
-          else
-            echo "No scanner report found."
-            exit 1
-          fi
- 
-  check-critical-permissions:
+  run-salesforce-critical-permissions-check:
+    needs: calculate-differences
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
  
       - name: Scan Profiles and Permission Sets for Critical Permissions
         run: |
@@ -200,3 +165,58 @@ jobs:
           else
             echo "No critical permissions assigned to non-System Administrator profiles or permission sets."
           fi
+ 
+  check-severity-3-vulnerabilities:
+    needs: run-salesforce-code-analyzer
+    runs-on: ubuntu-latest
+    outputs:
+      severity_fail_count: ${{ steps.check-severity.outputs.severity_fail_count }}
+    steps:
+      - uses: actions/checkout@v3
+ 
+      - name: Download scanner-report.csv artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: scanner-report.csv
+ 
+      - name: Check for Severity 3 Vulnerabilities
+        id: check-severity
+        run: |
+          if [ -f scanner-report.csv ]; then
+            severity_fail_count=$(awk -F',' '{gsub(/^ *| *$/, "", $2); if($2 == "\"3\"") count++} END {print count}' scanner-report.csv)
+            echo "Severity 3 issues count: $severity_fail_count"
+            echo "severity_fail_count=$severity_fail_count" >> $GITHUB_ENV
+            echo "::set-output name=severity_fail_count::$severity_fail_count"
+          else
+            echo "No scanner report found."
+            exit 1
+          fi
+ 
+  block-pr-if-vulnerabilities-found:
+    needs: [check-severity-3-vulnerabilities, run-salesforce-critical-permissions-check]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Block PR if Vulnerabilities or Critical Permission Issues Found
+        run: |
+          severity_fail_count="${{ needs.check-severity-3-vulnerabilities.outputs.severity_fail_count }}"
+          if [ "$severity_fail_count" -gt 0 ]; then
+            echo "Blocking your pull request due to severity 3 vulnerabilities found."
+            exit 1
+          fi
+          if [ "${{ needs.run-salesforce-critical-permissions-check.result }}" == "failure" ]; then
+            echo "Blocking your pull request due to critical permission issues."
+            exit 1
+          fi
+          echo "No issues found. Send Approval to Reviewers."
+ 
+  code-analyzer-report:
+    needs: [block-pr-if-vulnerabilities-found]
+    if: success()  # Ensures this job only runs if the previous jobs were successful
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+ 
+      - name: Download scanner-report.csv artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: scanner-report.csv
