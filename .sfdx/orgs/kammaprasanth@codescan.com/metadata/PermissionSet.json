@@ -1,0 +1,113 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:56:25.000Z",
+      "fileName": "permissionsets/sf_devops__DevOps_CenterRelease.permissionset",
+      "fullName": "sf_devops__DevOps_CenterRelease",
+      "id": "0PSak000007yb5YGAQ",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:56:25.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "PermissionSet"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-30T14:44:56.000Z",
+      "fileName": "permissionsets/CodeAnalyzerDemoPermissionSet.permissionset",
+      "fullName": "CodeAnalyzerDemoPermissionSet",
+      "id": "0PSak000008TAgwGAG",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-30T14:45:18.000Z",
+      "manageableState": "unmanaged",
+      "type": "PermissionSet"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:56:25.000Z",
+      "fileName": "permissionsets/sf_devops__DevOps_CenterManager.permissionset",
+      "fullName": "sf_devops__DevOps_CenterManager",
+      "id": "0PSak000007yb5XGAQ",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:56:25.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "PermissionSet"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "permissionsets/Experience_Profile_Manager.permissionset",
+      "fullName": "Experience_Profile_Manager",
+      "id": "0PSak000007yS1JGAU",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T12:33:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "PermissionSet"
+    },
+    {
+      "createdById": "005ak000007xAIfAAM",
+      "createdByName": "Prasanth Kamma",
+      "createdDate": "2024-09-12T13:56:24.000Z",
+      "fileName": "permissionsets/sf_devops__DevOps_Center.permissionset",
+      "fullName": "sf_devops__DevOps_Center",
+      "id": "0PSak000007yb5WGAQ",
+      "lastModifiedById": "005ak000007xAIfAAM",
+      "lastModifiedByName": "Prasanth Kamma",
+      "lastModifiedDate": "2024-09-12T13:56:24.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "sf_devops",
+      "type": "PermissionSet"
+    },
+    {
+      "createdById": "005ak000007xKTJAA2",
+      "createdByName": "DevOps Center",
+      "createdDate": "2024-09-12T13:58:45.000Z",
+      "fileName": "permissionsets/sf_devops_InitializeEnvironments.permissionset",
+      "fullName": "sf_devops_InitializeEnvironments",
+      "id": "0PSak000007yb5bGAA",
+      "lastModifiedById": "005ak000007xKTJAA2",
+      "lastModifiedByName": "DevOps Center",
+      "lastModifiedDate": "2024-09-12T13:58:45.000Z",
+      "manageableState": "unmanaged",
+      "type": "PermissionSet"
+    },
+    {
+      "createdById": "005ak000007xKTJAA2",
+      "createdByName": "DevOps Center",
+      "createdDate": "2024-09-12T13:58:44.000Z",
+      "fileName": "permissionsets/sf_devops_NamedCredentials.permissionset",
+      "fullName": "sf_devops_NamedCredentials",
+      "id": "0PSak000007yb5aGAA",
+      "lastModifiedById": "005ak000007xKTJAA2",
+      "lastModifiedByName": "DevOps Center",
+      "lastModifiedDate": "2024-09-13T14:15:50.000Z",
+      "manageableState": "unmanaged",
+      "type": "PermissionSet"
+    },
+    {
+      "createdById": "005ak000007xANWAA2",
+      "createdByName": "Automated Process",
+      "createdDate": "2024-09-12T12:33:17.000Z",
+      "fileName": "permissionsets/sfdcInternalInt__sfdc_scrt2.permissionset",
+      "fullName": "sfdcInternalInt__sfdc_scrt2",
+      "id": "0PSak000007yS0bGAE",
+      "lastModifiedById": "005ak000007xANWAA2",
+      "lastModifiedByName": "Automated Process",
+      "lastModifiedDate": "2024-09-12T12:37:05.000Z",
+      "manageableState": "unmanaged",
+      "namespacePrefix": "sfdcInternalInt",
+      "type": "PermissionSet"
+    }
+  ]
+}

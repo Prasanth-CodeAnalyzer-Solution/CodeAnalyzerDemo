@@ -2,7 +2,7 @@ name: PR Approval Workflow
  
 on:
   pull_request_review:
-    types: [submitted]
+    types: [submitted, approved]
   check_suite:
     types: [completed]
  
